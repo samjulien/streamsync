@@ -1,21 +1,25 @@
-# Authentication
+---
+title: "Authentication"
+---
 
 The StreamSync authentication module allows you to restrict access to your application.
 
 Streamsync will be able to authenticate a user through an identity provider such as Google, Microsoft, Facebook, Github, Auth0, etc.
 
-::: warning Authentication is done before accessing the application
-Authentication is done before accessing the application. It is not possible to trigger authentication for certain pages exclusively.
-:::
+<Warning>
+  Authentication is done before accessing the application. It is not possible to
+  trigger authentication for certain pages exclusively.
+</Warning>
 
 ## Use OIDC provider
 
-Authentication configuration is done in [the `server_setup.py` module](custom-server.md). The configuration depends on your identity provider. 
+Authentication configuration is done in the `server_setup.py` [module](custom-server.md). The configuration depends on your identity provider.
 Here is an example configuration for Google.
 
-<img src="./images/authentication_oidc_principle.png" style="width: 100%; margin: auto">
+![Authentication OIDC Principle](/framework/images/authentication_oidc_principle.png)
 
-*server_setup.py*
+**server_setup.py**
+
 ```python
 import os
 import streamsync.serve
@@ -32,22 +36,23 @@ oidc = streamsync.auth.Oidc(
 
 streamsync.serve.register_auth(oidc)
 ```
+
 ### Use pre-configured OIDC
 
 StreamSync provides pre-configured OIDC providers. You can use them directly in your application.
 
-|                                                                                    | Provider                                                                                | Function | Description                                                                                     |
-|------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------|----------|-------------------------------------------------------------------------------------------------|
-| <img src="./images/auth_google_fill.png" style="width: 25px; min-width:25px" />    | Google  | `streamsync.auth.Google` | Allow your users to login with their Google Account                                             |
-| <img src="./images/auth_github_fill.png" style="width: 25px; min-width:25px" />    | Github                                                                                  | `streamsync.auth.Github` | Allow your users to login with their Github Account                                             |
-| <img src="./images/auth_auth0_fill.png" style="width: 25px; min-width:25px" />     | Auth0                                                                                   | `streamsync.auth.Auth0` | Allow your users to login with different providers or with login password through Auth0 |
-
+ | Provider | Function                 | Description                                                                             |
+ | -------- | ------------------------ | --------------------------------------------------------------------------------------- |
+ | Google   | `streamsync.auth.Google` | Allow your users to login with their Google Account                                     |
+ | Github   | `streamsync.auth.Github` | Allow your users to login with their Github Account                                     |
+ | Auth0    | `streamsync.auth.Auth0`  | Allow your users to login with different providers or with login password through Auth0 |
 
 #### Google
 
 You have to register your application into [Google Cloud Console](https://console.cloud.google.com/).
 
-*server_setup.py*
+_server_setup.py_
+
 ```python
 import os
 import streamsync.serve
@@ -66,7 +71,8 @@ streamsync.serve.register_auth(oidc)
 
 You have to register your application into [Github](https://docs.github.com/en/apps/creating-github-apps/registering-a-github-app/registering-a-github-app#registering-a-github-app)
 
-*server_setup.py*
+_server_setup.py_
+
 ```python
 import os
 import streamsync.serve
@@ -85,7 +91,8 @@ streamsync.serve.register_auth(oidc)
 
 You have to register your application into [Auth0](https://auth0.com/).
 
-*server_setup.py*
+_server_setup.py_
+
 ```python
 import os
 import streamsync.serve
@@ -103,11 +110,11 @@ streamsync.serve.register_auth(oidc)
 
 ### Authentication workflow
 
-<img src="./images/authentication_oidc.png" style="min-width: 25%; width: 35%; margin: auto">
+<img src="./framework/images/authentication_oidc.png#auth" />
 
 ## User information in event handler
 
-When the `user_info` route is configured, user information will be accessible 
+When the `user_info` route is configured, user information will be accessible
 in the event handler through the `session` argument.
 
 ```python
@@ -116,15 +123,15 @@ def on_page_load(state, session):
     state['email'] = email
 ```
 
-
 ## Unauthorize access
 
 It is possible to reject a user who, for example, does not have the correct email address.
 
-::: tip you can also use userinfo inside app
-You can restrict access to certain pages inside the application by using the `session` object.
-See [User information in event handler](#user-information-in-event-handler)
-:::
+<Tip>
+  You can also use userinfo inside app. You can restrict access to certain pages
+  inside the application by using the `session` object. See [User information in
+  event handler](#user-information-in-event-handler)
+</Tip>
 
 ```python
 from fastapi import Request
@@ -143,15 +150,15 @@ streamsync.serve.register_auth(oidc, callback=callback)
 
 The default authentication error page look like this:
 
-<img src="./images/auth_unauthorized_default.png">
+<img src="./framework/images/auth_unauthorized_default.png" />
 
-*streamsync.auth.Unauthorized*
+_streamsync.auth.Unauthorized_
 
-| Parameter | Description |
-|-----------|-------------|
-| status_code | HTTP status code |
-| message | Error message |
-| more_info | Additional information |
+| Parameter   | Description            |
+| ----------- | ---------------------- |
+| status_code | HTTP status code       |
+| message     | Error message          |
+| more_info   | Additional information |
 
 ## Modify user info
 
@@ -172,10 +179,9 @@ def callback(request: Request, session_id: str, userinfo: dict):
 		userinfo['group'].append('user')
 	else:
 		userinfo['group'].append('user')
-	
+
 streamsync.serve.register_auth(oidc, callback=callback)
 ```
-from fastapi import Request
 
 ## Custom unauthorized page
 
@@ -205,10 +211,8 @@ streamsync.serve.register_auth(oidc, unauthorized_action=unauthorized)
 
 ## Enable in edit mode
 
-Authentication is disabled in edit mode. To activate it, 
-you must trigger the loading of the server_setup module in edition mode.
+Authentication is disabled in edit mode. To activate it, you must trigger the loading of the server_setup module in edition mode.
 
 ```bash
 streamsync edit --enable-server-setup
 ```
-
